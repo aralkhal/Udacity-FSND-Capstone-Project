@@ -37,6 +37,8 @@ PATCH /actors/ and /movies/
     One test for error behavior of each endpoint
     At least two tests of RBAC for each role
 
+- In order to test the endpoints you have to put the token in test_app.py *****
+
 
 
 # Front End
@@ -73,3 +75,9 @@ flask run --reload
 ```
 
 The `--reload` flag will detect file changes and restart the server automatically.
+
+
+
+# Heroku:
+URL: https://movie-capstone.herokuapp.com/
+git: https://git.heroku.com/movie-capstone.git
