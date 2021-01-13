@@ -2,9 +2,26 @@ from sqlalchemy import Column, String, create_engine, Integer
 from flask_sqlalchemy import SQLAlchemy
 import json
 
+# ENV = 'dev'
+
+# if ENV == 'dev':
+#   # app.debug = True
+#   database_name = "movie"
+#   database_path = "postgres://{}/{}".format('postgres:13245@localhost:5432', database_name)
+# else:
+#   # Production
+#   # app.debug = False
+#   database_name = "movie"
+#   database_path = "postgres://{}/{}".format('postgres:13245@localhost:5432', database_name)
+
 # database_path = os.environ['DATABASE_URL']
+
 database_name = "movie"
-database_path = "postgres://{}/{}".format('postgres:13245@localhost:5432', database_name)
+# Dev or locally - need to uncomment the below to run locally: 
+# database_path = "postgres://{}/{}".format('postgres:13245@localhost:5432', database_name)
+
+# This the Heroku Postgres Database:
+database_path = 'postgres://djabbjxegwdzls:ec1a2636b48c8226f7a45997401928a6060403096893cb54981394f926a98f98@ec2-18-213-176-229.compute-1.amazonaws.com:5432/d77cfo6rubivgk'
 
 
 db = SQLAlchemy()
