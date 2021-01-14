@@ -21,7 +21,8 @@ database_name = "movie"
 # database_path = "postgres://{}/{}".format('postgres:13245@localhost:5432', database_name)
 
 # This the Heroku Postgres Database:
-database_path = 'postgres://djabbjxegwdzls:ec1a2636b48c8226f7a45997401928a6060403096893cb54981394f926a98f98@ec2-18-213-176-229.compute-1.amazonaws.com:5432/d77cfo6rubivgk'
+database_path = 'postgres://nwmbeadqfhaorx:2f3a2033b6cc37977d76a50480b0d2058f1f9993ebd4066f3cc276b6c4bb285c@ec2-52-22-135-159.compute-1.amazonaws.com:5432/de30su987fgltd'
+#  'postgres://djabbjxegwdzls:ec1a2636b48c8226f7a45997401928a6060403096893cb54981394f926a98f98@ec2-18-213-176-229.compute-1.amazonaws.com:5432/d77cfo6rubivgk'
 
 
 db = SQLAlchemy()
@@ -35,7 +36,7 @@ def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
-    # db.create_all()
+    db.create_all()
 
 
 '''
