@@ -3,18 +3,26 @@ from flask import request, _request_ctx_stack, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+import os
 # from .auth.auth import AuthError
 
+# This was commented to use the environment variables as suggested by the reviewer
+# AUTH0_DOMAIN = 'check-login.us.auth0.com'
+# ALGORITHMS = ['RS256']
+# API_AUDIENCE = 'Movie'
 
-AUTH0_DOMAIN = 'check-login.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'Movie'
+# To use the environment values
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN_NAME')
+ALGORITHMS = os.environ.get('ALGORITHMS')
+API_AUDIENCE = os.environ.get('API_AUDIENCE')
 
-## AuthError Exception
+# AuthError Exception
 '''
 AuthError Exception
 A standardized way to communicate auth failure modes
 '''
+
+
 class AuthError(Exception):
     def __init__(self, error, status_code):
         print("Hello Error")
@@ -22,7 +30,7 @@ class AuthError(Exception):
         self.status_code = status_code
 
 
-## Auth Header
+# Auth Header
 
 '''
 @TODO implement get_token_auth_header() method
@@ -32,6 +40,8 @@ class AuthError(Exception):
         it should raise an AuthError if the header is malformed
     return the token part of the header
 '''
+
+
 def get_token_auth_header():
     print("Error here !!!")
     header = request.headers['Authorization']
@@ -41,13 +51,14 @@ def get_token_auth_header():
             'code': 'no_header',
             'description': 'No header'
         }, 400)
-    else: 
+    else:
         token_header = header.split(' ')[1]
         print(token_header)
-    
+
     return token_header
 
 #    raise Exception('Not Implemented')
+
 
 '''
 @TODO implement check_permissions(permission, payload) method
@@ -60,6 +71,8 @@ def get_token_auth_header():
     it should raise an AuthError if the requested permission string is not in the payload permissions array
     return true otherwise
 '''
+
+
 def check_permissions(permission, payload):
     if 'permissions' not in payload:
         # abort(400)
@@ -70,13 +83,14 @@ def check_permissions(permission, payload):
 
     if permission not in payload['permissions']:
         raise AuthError({
-        'code': 'unauthorized',
-        'description': 'Permission not found.'
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
         }, 403)
 
     return True
 
     # raise Exception('Not Implemented')
+
 
 '''
 @TODO implement verify_decode_jwt(token) method
@@ -91,10 +105,13 @@ def check_permissions(permission, payload):
 
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
+
+
 def verify_decode_jwt(token):
     print('In Verify_decode_jwt')
 
-    jsonurl = urlopen(f'https://check-login.us.auth0.com/.well-known/jwks.json')
+    jsonurl = urlopen(
+        f'https://check-login.us.auth0.com/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
 
@@ -117,7 +134,7 @@ def verify_decode_jwt(token):
                 'n': key['n'],
                 'e': key['e']
             }
-    
+
     # Finally, verify!!!
     if rsa_key:
         try:
@@ -151,17 +168,11 @@ def verify_decode_jwt(token):
                 'description': 'Unable to parse authentication token.'
             }, 400)
     raise AuthError({
-                'code': 'invalid_header',
+        'code': 'invalid_header',
                 'description': 'Unable to find the appropriate key.'
-            }, 400)
-
-
-
-    
-
+    }, 400)
 
     # return token
-
 '''
 @TODO implement @requires_auth(permission) decorator method
     @INPUTS
@@ -172,6 +183,8 @@ def verify_decode_jwt(token):
     it should use the check_permissions method validate claims and check the requested permission
     return the decorator which passes the decoded payload to the decorated method
 '''
+
+
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)

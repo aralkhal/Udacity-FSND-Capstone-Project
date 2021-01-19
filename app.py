@@ -6,6 +6,7 @@ from flask_cors import CORS
 # from auth.auth import AuthError, requires_auth
 from auth import AuthError, requires_auth
 
+
 def create_app(test_config=None):
 
     app = Flask(__name__)
@@ -15,8 +16,9 @@ def create_app(test_config=None):
     @app.route('/')
     def get_greeting():
         excited = os.environ['EXCITED']
-        greeting = "Hello" 
-        if excited == 'true': greeting = greeting + "!!!!!"
+        greeting = "Hello"
+        if excited == 'true':
+            greeting = greeting + "!!!!!"
         return greeting
 
     @app.route('/coolkids')
@@ -27,14 +29,14 @@ def create_app(test_config=None):
     @app.route('/movies', methods=['GET'])
     @requires_auth('get:movies')
     def get_movies():
-        
+
         movies = Movie.query.all()
 
         if movies is None:
             return jsonify({
                 'success': False
             })
-        
+
         if len(movies) == 0:
             abort(422)
 
@@ -46,14 +48,14 @@ def create_app(test_config=None):
     # EndPoint to delete a movie
     @app.route('/movies/<int:id>', methods=['DELETE'])
     @requires_auth('delete:movie')
-    def delete_movie(id): 
+    def delete_movie(id):
         movie = Movie.query.filter(Movie.id == id).one_or_none()
 
         print("Hello from Delete ")
 
         if movie is None:
             abort(422)
-        
+
         Movie.delete(movie)
 
         return jsonify({
@@ -65,7 +67,7 @@ def create_app(test_config=None):
     @requires_auth('post:movie')
     def add_movie():
         body = request.get_json()
-       
+
         movie_title = body.get('title', None)
         movie_released_date = body.get('releaseDate', None)
 
@@ -75,16 +77,16 @@ def create_app(test_config=None):
                 'success': False
             })
 
-        movie = Movie(title = movie_title, releaseDate = movie_released_date)
-       
+        movie = Movie(title=movie_title, releaseDate=movie_released_date)
+
         Movie.insert(movie)
 
         return jsonify({
             'success': True
         })
 
-    
     # EndPoint to update a movie
+
     @app.route('/movies/<int:id>', methods=['PATCH'])
     @requires_auth('put:movie')
     def update_movie(id):
@@ -108,9 +110,8 @@ def create_app(test_config=None):
             'success': True
         })
 
-
-
     # End Point to get all actors
+
     @app.route('/actors', methods=['GET'])
     @requires_auth('get:actors')
     def get_actors():
@@ -121,7 +122,6 @@ def create_app(test_config=None):
             return jsonify({
                 'success': False
             })
-        
 
         return jsonify({
             'success': True,
@@ -131,25 +131,25 @@ def create_app(test_config=None):
     # EndPoint to delete an actor
     @app.route('/actors/<int:id>', methods=['DELETE'])
     @requires_auth('delete:actor')
-    def delete_actor(id): 
+    def delete_actor(id):
         actor = Actor.query.filter(Actor.id == id).one_or_none()
 
         if actor is None:
             abort(422)
-        
+
         Actor.delete(actor)
 
         return jsonify({
             'success': True
         })
 
-
     # EndPoint to add/post a actor
+
     @app.route('/actors', methods=['POST'])
     @requires_auth('post:actor')
     def add_actor():
         body = request.get_json()
-       
+
         actor_name = body.get('name', None)
         actor_age = body.get('age', None)
         actor_gender = body.get('gender', None)
@@ -159,17 +159,16 @@ def create_app(test_config=None):
                 'success': False
             })
 
+        actor = Actor(name=actor_name, age=actor_age, gender=actor_gender)
 
-        actor = Actor( name = actor_name, age = actor_age, gender = actor_gender)
-       
         Actor.insert(actor)
 
         return jsonify({
             'success': True
         })
 
-
     # EndPoint to update a actor
+
     @app.route('/actors/<int:id>', methods=['PATCH'])
     @requires_auth('put:actor')
     def update_actor(id):
@@ -195,7 +194,6 @@ def create_app(test_config=None):
             'success': True
         })
 
-    
     @app.errorhandler(422)
     def cannot_be_processed(error):
         return jsonify({
@@ -204,8 +202,32 @@ def create_app(test_config=None):
             'message': 'The request cannot be processed'
         }), 422
 
+    @app.errorhandler(403)
+    def forbidden_access(error):
+        return jsonify({
+            'success': False,
+            'error': 403,
+            'message': 'Forbidden Access'
+        }), 403
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 404,
+            'message': 'Page not Found'
+        }), 404
+
+    @app.errorhandler(401)
+    def unauthorized_action(error):
+        return jsonify({
+            'success': False,
+            'error': 401,
+            'message': 'unauthorized action'
+        }), 401
 
     return app
+
 
 app = create_app()
 
